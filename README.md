@@ -233,22 +233,6 @@ Click the **Sign out** button at the bottom of the sidebar.
 
 ---
 
-## 🐛 Common Issues
-
-### `ECONNREFUSED` when starting the frontend
-The backend is not running. Make sure you ran `npm run dev` inside the `backend/` directory first.
-
-### `MongoNetworkError` on backend startup
-Your `MONGO_URI` in `backend/.env` is incorrect or the IP is not whitelisted in MongoDB Atlas. Add `0.0.0.0/0` to the Atlas Network Access list for local development.
-
-### Login always fails
-Double-check that the `MONGO_URI` is set and the backend started successfully (you should see `Server running on port 5000` and `MongoDB connected` in the terminal).
-
-### Blank dashboard after login
-The seeder has not been run. Either run `node seed.js` from the `backend/` directory or create leads manually on the Leads page.
-
----
-
 ## 📄 License
 
 MIT
