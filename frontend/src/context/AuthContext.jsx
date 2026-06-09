@@ -18,7 +18,11 @@ export function AuthProvider({ children }) {
     authService
       .me()
       .then((res) => setUser(res.data.data))
-      .catch(() => localStorage.removeItem('gatherly_token'))
+      .catch(() => {
+        // Token is invalid/expired — clear it and ensure user state is null
+        localStorage.removeItem('gatherly_token');
+        setUser(null);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -41,8 +45,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    // Clear both localStorage and React state synchronously so
+    // any subsequent navigation sees no user immediately.
     localStorage.removeItem('gatherly_token');
     setUser(null);
+    setError(null);
   }, []);
 
   return (
