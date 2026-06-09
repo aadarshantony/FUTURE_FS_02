@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
+import { CheckCircle, XCircle, Warning, Info, X } from '@phosphor-icons/react';
 import { cn } from '../../utils/helpers';
 
 const ICONS = {
   success: CheckCircle,
   error: XCircle,
-  warning: AlertTriangle,
+  warning: Warning,
   info: Info,
 };
 
-const STYLES = {
-  success: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
-  error: 'border-red-500/40 bg-red-500/10 text-red-300',
-  warning: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-  info: 'border-blue-500/40 bg-blue-500/10 text-blue-300',
+const ICON_COLORS = {
+  success: 'text-[#10B981]',
+  error: 'text-[#EF4444]',
+  warning: 'text-[#F59E0B]',
+  info: 'text-[#3B82F6]',
 };
 
 let toastListeners = [];
@@ -52,23 +52,32 @@ export function Toaster() {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 max-w-sm w-full">
+    <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-4 max-w-sm w-full font-['Manrope',sans-serif]">
       {toasts.map((t) => {
-        const Icon = ICONS[t.type];
+        const Icon = ICONS[t.type] || Info;
         return (
           <div
             key={t.id}
             className={cn(
-              'flex items-start gap-3 px-4 py-3 rounded-[12px] border',
-              'shadow-lg backdrop-blur-md animate-slide-right',
-              'bg-[#0D1117]/95',
-              STYLES[t.type]
+              'flex items-start gap-4 px-5 py-4 bg-white border border-[#18181B] rounded-none',
+              'shadow-[4px_4px_0px_0px_#18181B] animate-slide-right',
             )}
+            data-testid={`toast-${t.type}`}
           >
-            <Icon size={16} className="mt-0.5 shrink-0" />
-            <p className="text-sm font-sans flex-1 leading-snug">{t.message}</p>
-            <button onClick={() => dismiss(t.id)} className="opacity-60 hover:opacity-100 shrink-0">
-              <X size={14} />
+            <Icon 
+              size={24} 
+              weight="fill" 
+              className={cn('shrink-0', ICON_COLORS[t.type])} 
+            />
+            <p className="text-sm font-bold text-[#09090B] flex-1 pt-0.5 leading-snug">
+              {t.message}
+            </p>
+            <button
+              onClick={() => dismiss(t.id)}
+              data-testid="toast-dismiss-btn"
+              className="text-[#71717A] hover:text-[#18181B] shrink-0 transition-colors pt-0.5"
+            >
+              <X size={16} weight="bold" />
             </button>
           </div>
         );

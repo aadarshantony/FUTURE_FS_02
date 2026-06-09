@@ -1,61 +1,57 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
+  SquaresFour,
   Users,
-  BarChart3,
-  Activity,
-  LogOut,
-  Settings,
-  Zap,
-  ChevronRight,
-} from 'lucide-react';
+  ChartBar,
+  PulseIcon,
+  SignOut,
+  X,
+} from '@phosphor-icons/react';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar } from '../ui/Avatar';
 import { cn } from '../../utils/helpers';
 import { toast } from '../ui/Toast';
 
 const NAV_ITEMS = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/dashboard', icon: SquaresFour, label: 'Dashboard' },
   { to: '/leads', icon: Users, label: 'Leads' },
-  { to: '/analytics', icon: BarChart3, label: 'Analytics' },
-  { to: '/activity', icon: Activity, label: 'Activity' },
+  { to: '/analytics', icon: ChartBar, label: 'Analytics' },
+  { to: '/activity', icon: PulseIcon, label: 'Activity' },
 ];
 
-function NavItem({ to, icon: Icon, label }) {
+function NavItem({ to, icon: Icon, label, onClick }) {
   return (
     <NavLink
       to={to}
+      onClick={onClick}
       className={({ isActive }) =>
         cn(
-          'group flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm font-medium',
-          'transition-all duration-200 relative',
+          'group flex items-center gap-4 py-3.5 pr-6 pl-5 text-[11px] font-bold uppercase tracking-[0.1em]',
+          'transition-all duration-200 relative select-none rounded-none border-l-4',
           isActive
-            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25'
-            : 'text-slate-500 hover:text-slate-200 hover:bg-white/5 border border-transparent'
+            ? 'bg-[#F4F4F5] text-[#09090B] border-[#FF4500]'
+            : 'text-[#71717A] hover:text-[#09090B] hover:bg-[#F4F4F5] border-transparent'
         )
       }
     >
       {({ isActive }) => (
         <>
           <Icon
-            size={17}
-            strokeWidth={isActive ? 2.2 : 1.8}
-            className={isActive ? 'text-emerald-400' : 'text-slate-500 group-hover:text-slate-300'}
+            size={20}
+            weight={isActive ? "fill" : "bold"}
+            className={cn(
+              'shrink-0 transition-colors duration-200',
+              isActive ? 'text-[#FF4500]' : 'text-[#71717A] group-hover:text-[#09090B]'
+            )}
           />
-          <span className="font-sans">{label}</span>
-          {isActive && (
-            <ChevronRight
-              size={13}
-              className="ml-auto text-emerald-500/60"
-            />
-          )}
+          <span>{label}</span>
         </>
       )}
     </NavLink>
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ open, onClose }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -65,47 +61,71 @@ export function Sidebar() {
     navigate('/login');
   };
 
+  const handleNavClick = () => {
+    // Close sidebar on mobile after navigation
+    if (onClose) onClose();
+  };
+
   return (
-    <aside
-      className="fixed left-0 top-0 bottom-0 bg-[#0D1117] border-r border-[#1E2D45] flex flex-col z-40"
-      style={{ width: '240px' }}
-    >
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-[#1E2D45]">
-        <div className="w-8 h-8 rounded-[9px] bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-          <Zap size={16} strokeWidth={2.5} className="text-white" />
-        </div>
-        <div>
-          <span className="text-sm font-bold text-white font-sans tracking-tight">Gatherly</span>
-          <span className="block text-[10px] font-mono text-emerald-500/70 tracking-widest uppercase">CRM</span>
-        </div>
-      </div>
+    <>
+      {/* Mobile overlay backdrop */}
+      {open && (
+        <div
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm lg:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        <p className="text-[10px] font-mono text-slate-600 uppercase tracking-widest px-3 mb-2">Menu</p>
-        {NAV_ITEMS.map((item) => (
-          <NavItem key={item.to} {...item} />
-        ))}
-      </nav>
-
-      {/* User footer */}
-      <div className="px-3 py-4 border-t border-[#1E2D45] space-y-2">
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] bg-[#111827] border border-[#1E2D45]">
-          <Avatar name={user?.name} size="sm" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-200 truncate">{user?.name}</p>
-            <p className="text-[10px] font-mono text-slate-600 truncate">{user?.role}</p>
+      <aside
+        className={cn(
+          'fixed left-0 top-0 bottom-0 flex flex-col z-40 bg-white border-r border-[#E4E4E7] font-[\'Manrope\',sans-serif] transition-transform duration-300',
+          // On mobile: slide in/out. On lg+: always visible
+          open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        )}
+        style={{ width: '264px' }}
+      >
+        {/* Logo */}
+        <div className="flex items-center justify-between px-6 py-6 border-b border-[#E4E4E7]">
+          <div>
+            <span className="text-2xl font-['Outfit',sans-serif] font-black tracking-tight text-[#09090B] uppercase">Gatherly</span>
+            <span className="block text-[9px] font-bold text-[#71717A] tracking-[0.2em] uppercase mt-0.5">CRM System</span>
           </div>
+          {/* Close button — mobile only */}
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1.5 text-[#71717A] hover:text-[#09090B] hover:bg-[#F4F4F5] border border-transparent hover:border-[#E4E4E7] transition-all rounded-none"
+          >
+            <X size={20} weight="bold" />
+          </button>
         </div>
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-[10px] text-xs text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 font-sans"
-        >
-          <LogOut size={14} />
-          Sign out
-        </button>
-      </div>
-    </aside>
+
+        {/* Nav */}
+        <nav className="flex-1 py-6 space-y-1 overflow-y-auto">
+          <p className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.2em] px-6 mb-4">Menu</p>
+          {NAV_ITEMS.map((item) => (
+            <NavItem key={item.to} {...item} onClick={handleNavClick} />
+          ))}
+        </nav>
+
+        {/* User footer */}
+        <div className="p-6 border-t border-[#E4E4E7] space-y-4 bg-white">
+          <div className="flex items-center gap-3 p-3 bg-[#F4F4F5] border border-[#E4E4E7] hover:border-[#18181B] transition-colors rounded-none cursor-pointer">
+            <Avatar name={user?.name} size="sm" className="border border-[#18181B]" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-[#09090B] truncate leading-tight">{user?.name}</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#71717A] truncate mt-0.5">{user?.role}</p>
+            </div>
+          </div>
+          
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 text-[11px] font-bold uppercase tracking-widest text-[#09090B] border border-transparent hover:border-[#18181B] hover:bg-[#F4F4F5] hover:shadow-[4px_4px_0px_0px_#18181B] transition-all duration-200 rounded-none group"
+          >
+            <SignOut size={18} weight="bold" className="text-[#71717A] group-hover:text-[#EF4444] transition-colors" />
+            Sign out
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

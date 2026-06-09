@@ -10,11 +10,10 @@ const sizes = {
 };
 
 const COLORS = [
-  'from-emerald-500 to-teal-500',
-  'from-violet-500 to-purple-500',
-  'from-blue-500 to-cyan-500',
-  'from-pink-500 to-rose-500',
-  'from-amber-500 to-orange-500',
+  'bg-[#18181B] text-white border border-[#18181B]',
+  'bg-[#FF4500] text-white border border-[#FF4500]',
+  'bg-white text-[#09090B] border border-[#18181B]',
+  'bg-[#F4F4F5] text-[#09090B] border border-[#18181B]',
 ];
 
 function getColorIndex(name = '') {
@@ -25,13 +24,13 @@ function getColorIndex(name = '') {
 
 export function Avatar({ name = '', size = 'md', className = '' }) {
   const initials = getInitials(name);
-  const gradient = COLORS[getColorIndex(name)];
+  const themeConfig = COLORS[getColorIndex(name)];
+  
   return (
     <div
       className={cn(
-        'rounded-full flex items-center justify-center font-semibold font-sans',
-        'bg-gradient-to-br text-white shrink-0',
-        gradient,
+        'rounded-none flex items-center justify-center font-["Outfit",sans-serif] font-black uppercase tracking-widest shrink-0',
+        themeConfig,
         sizes[size],
         className
       )}

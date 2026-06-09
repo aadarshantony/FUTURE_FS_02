@@ -1,4 +1,4 @@
-import { DollarSign, TrendingUp, Target, Users, BarChart3 } from 'lucide-react';
+import { CurrencyDollar, TrendUp, Target, Users, ChartBar } from '@phosphor-icons/react';
 import { analyticsService } from '../services/analytics.service';
 import { useFetch } from '../hooks/useFetch';
 import { StatCard } from '../components/dashboard/StatCard';
@@ -9,33 +9,33 @@ import {
 } from '../components/analytics/Charts';
 import { SkeletonStats, SkeletonCard } from '../components/ui/Skeleton';
 import { formatCurrency } from '../utils/helpers';
-import { Card, CardHeader, CardTitle, CardBody } from '../components/ui/Card';
 
 function RevenueCard({ revenue, loading }) {
   if (loading) return <SkeletonStats />;
   return (
-    <Card glow>
-      <CardBody className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-[9px] bg-amber-500/10 flex items-center justify-center">
-            <DollarSign size={16} className="text-amber-400" />
+    <div className="bg-white border border-[#E4E4E7] p-6 lg:p-8 rounded-none hover:border-[#18181B] transition-colors" data-testid="revenue-overview-card">
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-12 h-12 bg-[#FF4500] flex items-center justify-center shrink-0">
+          <CurrencyDollar size={24} weight="bold" className="text-white" />
+        </div>
+        <div>
+          <h2 className="text-xl font-['Outfit',sans-serif] font-black tracking-tight text-[#09090B] uppercase">Revenue Overview</h2>
+          <p className="text-[10px] text-[#71717A] font-bold tracking-[0.2em] uppercase mt-1">Converted leads only</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+        {[
+          { label: 'Total Revenue', value: formatCurrency(revenue?.totalRevenue), color: 'text-[#09090B]' },
+          { label: 'Closed Deals', value: revenue?.deals ?? 0, color: 'text-[#09090B]' },
+          { label: 'Avg Deal Size', value: formatCurrency(revenue?.averageDealValue), color: 'text-[#09090B]' },
+        ].map(({ label, value, color }) => (
+          <div key={label} className="p-6 bg-[#F4F4F5] border border-[#E4E4E7] hover:border-[#18181B] transition-colors rounded-none">
+            <p className={`text-3xl md:text-4xl font-['Outfit',sans-serif] font-black ${color} tracking-tighter`}>{value}</p>
+            <p className="text-[10px] text-[#71717A] font-bold uppercase tracking-[0.2em] mt-2">{label}</p>
           </div>
-          <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">Revenue Overview</p>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          {[
-            { label: 'Total Revenue', value: formatCurrency(revenue?.totalRevenue), color: 'text-emerald-400' },
-            { label: 'Closed Deals', value: revenue?.deals ?? 0, color: 'text-blue-400' },
-            { label: 'Avg Deal Size', value: formatCurrency(revenue?.averageDealValue), color: 'text-amber-400' },
-          ].map(({ label, value, color }) => (
-            <div key={label} className="text-center p-3 rounded-[10px] bg-[#161D2E] border border-[#1E2D45]">
-              <p className={`text-xl font-bold ${color} font-sans`}>{value}</p>
-              <p className="text-[10px] font-mono text-slate-600 mt-0.5 uppercase tracking-wider">{label}</p>
-            </div>
-          ))}
-        </div>
-      </CardBody>
-    </Card>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -46,22 +46,17 @@ export default function AnalyticsPage() {
   const overview = analytics?.overview || {};
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 font-['Manrope',sans-serif] text-[#09090B] animate-fade-in" data-testid="analytics-page">
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {analyticsLoading ? (
           Array(4).fill(0).map((_, i) => <SkeletonStats key={i} />)
         ) : (
           <>
-            <StatCard icon={Users} label="Total Leads" value={overview.totalLeads ?? 0} color="blue" />
-            <StatCard icon={Target} label="Converted" value={overview.convertedLeads ?? 0} sub={`${overview.conversionRate ?? 0}% rate`} color="emerald" />
-            <StatCard icon={TrendingUp} label="Lost" value={overview.lostLeads ?? 0} color="red" />
-            <StatCard
-              icon={BarChart3}
-              label="Conversion Rate"
-              value={`${overview.conversionRate ?? 0}%`}
-              color="violet"
-            />
+            <StatCard icon={Users} label="Total Leads" value={overview.totalLeads ?? 0} color="zinc" />
+            <StatCard icon={Target} label="Converted" value={overview.convertedLeads ?? 0} sub={`${overview.conversionRate ?? 0}% rate`} color="success" />
+            <StatCard icon={TrendUp} label="Lost" value={overview.lostLeads ?? 0} color="danger" />
+            <StatCard icon={ChartBar} label="Conversion Rate" value={`${overview.conversionRate ?? 0}%`} color="primary" />
           </>
         )}
       </div>
@@ -70,14 +65,18 @@ export default function AnalyticsPage() {
       <RevenueCard revenue={revenue} loading={revenueLoading} />
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {analyticsLoading ? (
-          Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />)
+          Array(4).fill(0).map((_, i) => <SkeletonCard key={i} className="rounded-none" />)
         ) : (
           <>
-            <MonthlyGrowthChart data={analytics?.monthlyGrowth} />
-            <StatusDistributionChart data={analytics?.statusStats} />
-            <div className="lg:col-span-2">
+            <div className="border border-[#E4E4E7] bg-white rounded-none p-4 hover:border-[#18181B] transition-colors">
+              <MonthlyGrowthChart data={analytics?.monthlyGrowth} />
+            </div>
+            <div className="border border-[#E4E4E7] bg-white rounded-none p-4 hover:border-[#18181B] transition-colors">
+              <StatusDistributionChart data={analytics?.statusStats} />
+            </div>
+            <div className="lg:col-span-2 border border-[#E4E4E7] bg-white rounded-none p-4 hover:border-[#18181B] transition-colors">
               <SourceBarChart data={analytics?.sourceStats} />
             </div>
           </>
@@ -86,16 +85,16 @@ export default function AnalyticsPage() {
 
       {/* Status table */}
       {!analyticsLoading && analytics?.statusStats && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Status Breakdown</CardTitle>
-          </CardHeader>
-          <CardBody className="p-0">
+        <div className="bg-white border border-[#E4E4E7] rounded-none hover:border-[#18181B] transition-colors">
+          <div className="px-6 py-5 border-b border-[#E4E4E7]">
+            <h3 className="text-sm font-['Outfit',sans-serif] font-black uppercase tracking-widest text-[#09090B]">Status Breakdown</h3>
+          </div>
+          <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#1E2D45]">
+                <tr className="border-b border-[#E4E4E7] bg-[#F4F4F5]">
                   {['Status', 'Count', 'Share'].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-[10px] font-mono text-slate-600 uppercase tracking-widest">
+                    <th key={h} className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[#71717A]">
                       {h}
                     </th>
                   ))}
@@ -106,20 +105,20 @@ export default function AnalyticsPage() {
                   const total = overview.totalLeads || 1;
                   const pct = ((s.count / total) * 100).toFixed(1);
                   return (
-                    <tr key={s._id} className="border-b border-[#1E2D45] last:border-0 hover:bg-white/2 transition-colors">
-                      <td className="px-5 py-3 text-sm text-slate-300 font-mono capitalize">
+                    <tr key={s._id} className="border-b border-[#E4E4E7] last:border-0 hover:bg-[#F4F4F5] transition-colors">
+                      <td className="px-6 py-4 text-sm font-bold text-[#09090B] uppercase tracking-wider">
                         {s._id.replace(/_/g, ' ')}
                       </td>
-                      <td className="px-5 py-3 text-sm font-bold text-white">{s.count}</td>
-                      <td className="px-5 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1 h-1.5 bg-[#1E2D45] rounded-full overflow-hidden max-w-32">
+                      <td className="px-6 py-4 text-sm font-['Outfit',sans-serif] font-black text-[#09090B]">{s.count}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          <div className="flex-1 h-2 bg-[#E4E4E7] rounded-none overflow-hidden max-w-[150px]">
                             <div
-                              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"
+                              className="h-full bg-[#FF4500] rounded-none"
                               style={{ width: `${pct}%` }}
                             />
                           </div>
-                          <span className="text-xs font-mono text-slate-500">{pct}%</span>
+                          <span className="text-xs font-bold text-[#71717A] w-12 shrink-0">{pct}%</span>
                         </div>
                       </td>
                     </tr>
@@ -127,8 +126,8 @@ export default function AnalyticsPage() {
                 })}
               </tbody>
             </table>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );

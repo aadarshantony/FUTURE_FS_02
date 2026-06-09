@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import {
-  Plus, Search, Filter, ChevronLeft, ChevronRight, X, SlidersHorizontal,
-} from 'lucide-react';
+  Plus, MagnifyingGlass as Search, CaretLeft as ChevronLeft, CaretRight as ChevronRight, X, Faders as SlidersHorizontal,
+} from '@phosphor-icons/react';
 import { leadsService } from '../services/leads.service';
 import { useFetch } from '../hooks/useFetch';
 import { useMutation } from '../hooks/useMutation';
@@ -88,59 +88,70 @@ export default function LeadsPage() {
   const hasFilters = statusFilter || sourceFilter || debouncedSearch;
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="space-y-6 font-['Manrope',sans-serif] text-[#09090B] animate-fade-in" data-testid="leads-page">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <p className="text-xs font-mono text-slate-600 uppercase tracking-widest">
-            {pagination.total != null ? `${pagination.total} leads` : 'Loading...'}
+          <p className="uppercase text-xs tracking-[0.2em] font-bold text-[#71717A]" data-testid="leads-total-count">
+            {pagination.total != null ? `${pagination.total} total leads` : 'Loading...'}
           </p>
         </div>
-        <Button icon={Plus} onClick={() => setShowCreate(true)}>New Lead</Button>
+        <Button icon={Plus} onClick={() => setShowCreate(true)} data-testid="new-lead-btn" className="rounded-none w-full sm:w-auto">
+          New Lead
+        </Button>
       </div>
 
       {/* Search + Filters */}
-      <div className="flex gap-3 flex-wrap">
-        {/* Search */}
-        <div className="relative flex-1 min-w-64">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" />
+      <div className="flex gap-3 sm:gap-4 flex-wrap">
+        <div className="relative flex-1 min-w-0 group">
+          <Search size={18} weight="bold" className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#18181B] pointer-events-none transition-colors" />
           <input
             type="text"
             placeholder="Search by name, email, company..."
             value={search}
             onChange={handleSearchChange}
-            className="w-full bg-[#111827] border border-[#1E2D45] text-slate-100 placeholder:text-slate-600 font-sans text-sm rounded-[10px] pl-9 pr-9 py-2.5 focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/15 transition-all hover:border-[#243352]"
+            data-testid="leads-search-input"
+            className="w-full bg-[#F4F4F5] border border-[#E4E4E7] text-[#09090B] font-semibold placeholder-zinc-400 text-sm rounded-none pl-11 pr-10 py-3 sm:py-3.5 focus:outline-none focus:border-[#18181B] focus:bg-white transition-all hover:border-[#18181B]"
           />
           {search && (
-            <button onClick={clearSearch} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-              <X size={13} />
+            <button 
+              onClick={clearSearch} 
+              data-testid="clear-search-btn"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-[#18181B] transition-colors"
+            >
+              <X size={16} weight="bold" />
             </button>
           )}
         </div>
 
-        {/* Filter toggle */}
         <Button
           variant={showFilters ? 'outline' : 'secondary'}
           icon={SlidersHorizontal}
           onClick={() => setShowFilters(!showFilters)}
+          data-testid="toggle-filters-btn"
+          className="rounded-none border-[#E4E4E7] hover:border-[#18181B] shrink-0"
         >
-          Filters {hasFilters && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />}
+          Filters {hasFilters && <span className="ml-2 w-2 h-2 rounded-none bg-[#FF4500] inline-block" />}
         </Button>
       </div>
 
       {/* Filter panel */}
       {showFilters && (
-        <div className="flex gap-3 flex-wrap items-end p-4 bg-[#111827] border border-[#1E2D45] rounded-[12px] animate-fade-in">
+        <div 
+          className="flex gap-6 flex-wrap items-end p-6 bg-white border border-[#E4E4E7] rounded-none animate-fade-in shadow-[4px_4px_0px_0px_#E4E4E7]"
+          data-testid="filters-panel"
+        >
           <Select
             label="Status"
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="w-44"
+            className="w-56 rounded-none bg-[#F4F4F5] border-[#E4E4E7]"
+            data-testid="status-filter-select"
           >
-            <option value="" className="bg-[#111827]">All Statuses</option>
+            <option value="" className="bg-white">All Statuses</option>
             {LEAD_STATUS_VALUES.map((s) => (
-              <option key={s} value={s} className="bg-[#111827]">
-                {s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+              <option key={s} value={s} className="bg-white uppercase text-xs font-bold tracking-wider">
+                {s.replace(/_/g, ' ')}
               </option>
             ))}
           </Select>
@@ -148,12 +159,13 @@ export default function LeadsPage() {
             label="Source"
             value={sourceFilter}
             onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
-            className="w-44"
+            className="w-56 rounded-none bg-[#F4F4F5] border-[#E4E4E7]"
+            data-testid="source-filter-select"
           >
-            <option value="" className="bg-[#111827]">All Sources</option>
+            <option value="" className="bg-white">All Sources</option>
             {LEAD_SOURCES.map((s) => (
-              <option key={s} value={s} className="bg-[#111827]">
-                {s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+              <option key={s} value={s} className="bg-white uppercase text-xs font-bold tracking-wider">
+                {s.replace(/_/g, ' ')}
               </option>
             ))}
           </Select>
@@ -165,8 +177,10 @@ export default function LeadsPage() {
               onClick={() => {
                 setStatusFilter(''); setSourceFilter(''); clearSearch(); setPage(1);
               }}
+              data-testid="clear-all-filters-btn"
+              className="rounded-none text-[#09090B] hover:bg-[#F4F4F5] font-bold tracking-widest uppercase text-xs h-10 px-4"
             >
-              Clear
+              Clear all
             </Button>
           )}
         </div>
@@ -174,22 +188,24 @@ export default function LeadsPage() {
 
       {/* Table */}
       {loading ? (
-        <div className="bg-[#111827] border border-[#1E2D45] rounded-[14px] overflow-hidden">
+        <div className="bg-white border border-[#E4E4E7] rounded-none overflow-hidden">
           {Array(8).fill(0).map((_, i) => <SkeletonRow key={i} />)}
         </div>
       ) : (
-        <LeadsTable
-          leads={leads}
-          onView={setSelectedLead}
-          onEdit={setEditLead}
-          onDelete={setDeleteLead}
-        />
+        <div className="border border-[#E4E4E7] rounded-none bg-white">
+          <LeadsTable
+            leads={leads}
+            onView={setSelectedLead}
+            onEdit={setEditLead}
+            onDelete={setDeleteLead}
+          />
+        </div>
       )}
 
       {/* Pagination */}
       {pagination.pages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-mono text-slate-600">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-[#E4E4E7]">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#71717A]" data-testid="pagination-info">
             Page {pagination.page} of {pagination.pages}
           </p>
           <div className="flex gap-2">
@@ -199,31 +215,26 @@ export default function LeadsPage() {
               icon={ChevronLeft}
               disabled={pagination.page <= 1}
               onClick={() => setPage((p) => p - 1)}
+              data-testid="prev-page-btn"
+              className="rounded-none border-[#E4E4E7] hover:border-[#18181B]"
             />
             <Button
               variant="secondary"
               size="sm"
               disabled={pagination.page >= pagination.pages}
               onClick={() => setPage((p) => p + 1)}
+              data-testid="next-page-btn"
+              className="rounded-none border-[#E4E4E7] hover:border-[#18181B]"
             >
-              <ChevronRight size={14} />
+              <ChevronRight size={16} weight="bold" />
             </Button>
           </div>
         </div>
       )}
 
       {/* Modals */}
-      <CreateLeadModal
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-        onSuccess={refetch}
-      />
-      <EditLeadModal
-        open={!!editLead}
-        onClose={() => setEditLead(null)}
-        lead={editLead}
-        onSuccess={refetch}
-      />
+      <CreateLeadModal open={showCreate} onClose={() => setShowCreate(false)} onSuccess={refetch} />
+      <EditLeadModal open={!!editLead} onClose={() => setEditLead(null)} lead={editLead} onSuccess={refetch} />
       <LeadDetailModal
         open={!!selectedLead}
         onClose={() => setSelectedLead(null)}

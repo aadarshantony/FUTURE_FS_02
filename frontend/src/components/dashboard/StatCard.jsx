@@ -1,75 +1,88 @@
 import { cn } from '../../utils/helpers';
 
-export function StatCard({ icon: Icon, label, value, sub, color = 'emerald', trend }) {
+export function StatCard({ icon: Icon, label, value, sub, color = 'zinc', trend }) {
   const colorMap = {
+    primary: {
+      icon: 'text-white',
+      iconBg: 'bg-[#FF4500] border border-[#FF4500]',
+    },
+    success: {
+      icon: 'text-white',
+      iconBg: 'bg-[#10B981] border border-[#10B981]',
+    },
+    danger: {
+      icon: 'text-white',
+      iconBg: 'bg-[#EF4444] border border-[#EF4444]',
+    },
+    warning: {
+      icon: 'text-white',
+      iconBg: 'bg-[#F59E0B] border border-[#F59E0B]',
+    },
+    zinc: {
+      icon: 'text-[#09090B]',
+      iconBg: 'bg-[#F4F4F5] border border-[#E4E4E7]',
+    },
+    // Legacy mapping support
     emerald: {
-      icon: 'text-emerald-400 bg-emerald-500/10',
-      glow: 'shadow-emerald-500/10',
-      border: 'hover:border-emerald-500/30',
-      gradient: 'from-emerald-500/5 to-transparent',
+      icon: 'text-white',
+      iconBg: 'bg-[#10B981] border border-[#10B981]',
     },
     blue: {
-      icon: 'text-blue-400 bg-blue-500/10',
-      glow: 'shadow-blue-500/10',
-      border: 'hover:border-blue-500/30',
-      gradient: 'from-blue-500/5 to-transparent',
+      icon: 'text-white',
+      iconBg: 'bg-[#3B82F6] border border-[#3B82F6]',
     },
     violet: {
-      icon: 'text-violet-400 bg-violet-500/10',
-      glow: 'shadow-violet-500/10',
-      border: 'hover:border-violet-500/30',
-      gradient: 'from-violet-500/5 to-transparent',
+      icon: 'text-white',
+      iconBg: 'bg-[#8B5CF6] border border-[#8B5CF6]',
     },
     amber: {
-      icon: 'text-amber-400 bg-amber-500/10',
-      glow: 'shadow-amber-500/10',
-      border: 'hover:border-amber-500/30',
-      gradient: 'from-amber-500/5 to-transparent',
+      icon: 'text-white',
+      iconBg: 'bg-[#F59E0B] border border-[#F59E0B]',
     },
     red: {
-      icon: 'text-red-400 bg-red-500/10',
-      glow: 'shadow-red-500/10',
-      border: 'hover:border-red-500/30',
-      gradient: 'from-red-500/5 to-transparent',
+      icon: 'text-white',
+      iconBg: 'bg-[#EF4444] border border-[#EF4444]',
     },
   };
 
-  const c = colorMap[color] || colorMap.emerald;
+  const c = colorMap[color] || colorMap.zinc;
 
   return (
     <div
-      className={cn(
-        'relative overflow-hidden rounded-[14px] border border-[#1E2D45] bg-[#111827]',
-        'p-5 transition-all duration-300',
-        'hover:shadow-xl hover:-translate-y-0.5 cursor-default',
-        c.glow && `shadow-lg ${c.glow}`,
-        c.border,
-      )}
+      className="relative bg-white border border-[#E4E4E7] p-6 lg:p-8 rounded-none transition-all duration-200 hover:border-[#18181B] hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#18181B] group cursor-default font-['Manrope',sans-serif]"
     >
-      {/* Gradient accent */}
-      <div className={cn('absolute top-0 right-0 w-32 h-32 rounded-full -translate-y-1/2 translate-x-1/2 bg-gradient-to-br opacity-40', c.gradient)} />
-
-      <div className="flex items-start justify-between relative">
-        <div>
-          <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-2">{label}</p>
-          <p className="text-3xl font-bold text-white font-sans tracking-tight">{value}</p>
-          {sub && <p className="text-xs text-slate-500 mt-1 font-mono">{sub}</p>}
+      {/* Top row */}
+      <div className="flex items-start justify-between mb-6 lg:mb-8">
+        <div className={cn('w-12 h-12 flex items-center justify-center shrink-0 rounded-none', c.iconBg)}>
+          {Icon && <Icon size={24} weight="bold" className={c.icon} />}
         </div>
-        <div className={cn('w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0', c.icon)}>
-          <Icon size={18} strokeWidth={2} />
-        </div>
+        {trend != null && (
+          <div className={cn(
+            'text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-none border',
+            trend >= 0 
+              ? 'text-[#10B981] bg-[#10B981]/10 border-[#10B981]/20' 
+              : 'text-[#EF4444] bg-[#EF4444]/10 border-[#EF4444]/20'
+          )}>
+            {trend >= 0 ? '+' : ''}{trend}%
+          </div>
+        )}
       </div>
 
-      {trend != null && (
-        <div className="mt-3 flex items-center gap-1.5">
-          <div className={cn(
-            'text-xs font-mono font-medium',
-            trend >= 0 ? 'text-emerald-400' : 'text-red-400'
-          )}>
-            {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}%
-          </div>
-          <span className="text-xs text-slate-600 font-mono">vs last month</span>
-        </div>
+      {/* Value */}
+      <p className="text-3xl md:text-4xl font-['Outfit',sans-serif] font-black text-[#09090B] tracking-tighter leading-none mb-2">
+        {value}
+      </p>
+
+      {/* Label */}
+      <p className="text-[10px] text-[#71717A] font-bold uppercase tracking-[0.2em]">
+        {label}
+      </p>
+
+      {/* Sub */}
+      {sub && (
+        <p className="text-[10px] text-[#09090B] font-bold uppercase tracking-[0.1em] mt-4 pt-4 border-t border-[#E4E4E7]">
+          {sub}
+        </p>
       )}
     </div>
   );

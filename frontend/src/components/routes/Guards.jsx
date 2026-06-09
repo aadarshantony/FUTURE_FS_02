@@ -1,36 +1,28 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Loader2 } from 'lucide-react';
+import { CircleNotch } from '@phosphor-icons/react';
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen bg-[#F4F4F5] flex items-center justify-center font-['Manrope',sans-serif]">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 bg-white border-2 border-[#18181B] flex items-center justify-center shadow-[4px_4px_0px_0px_#18181B]">
+          <CircleNotch size={24} weight="bold" className="text-[#FF4500] animate-spin" />
+        </div>
+        <p className="text-[10px] font-bold text-[#71717A] tracking-[0.2em] uppercase">Loading Gatherly...</p>
+      </div>
+    </div>
+  );
+}
 
 export function ProtectedRoute() {
   const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/40 animate-pulse-glow">
-            <Loader2 size={20} className="text-white animate-spin" />
-          </div>
-          <p className="text-xs font-mono text-slate-600 tracking-widest uppercase">Loading Gatherly...</p>
-        </div>
-      </div>
-    );
-  }
-
+  if (loading) return <PageLoader />;
   return user ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
 export function PublicRoute() {
   const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center">
-        <Loader2 size={24} className="text-emerald-500 animate-spin" />
-      </div>
-    );
-  }
-
+  if (loading) return <PageLoader />;
   return !user ? <Outlet /> : <Navigate to="/dashboard" replace />;
 }

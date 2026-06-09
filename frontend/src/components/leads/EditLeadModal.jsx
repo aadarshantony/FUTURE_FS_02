@@ -47,31 +47,66 @@ export function EditLeadModal({ open, onClose, lead, onSuccess }) {
   };
 
   return (
-    <Modal open={open} onClose={onClose} title="Edit Lead" size="md">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <Input label="Full Name" name="fullName" value={form.fullName || ''} onChange={handleChange} />
-          <Input label="Email" name="email" type="email" value={form.email || ''} onChange={handleChange} />
+    <Modal open={open} onClose={onClose} title="Edit Lead" size="lg">
+      <form onSubmit={handleSubmit} className="space-y-6 font-['Manrope',sans-serif]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Input 
+            label="Full Name" 
+            name="fullName" 
+            value={form.fullName || ''} 
+            onChange={handleChange} 
+          />
+          <Input 
+            label="Email" 
+            name="email" 
+            type="email" 
+            value={form.email || ''} 
+            onChange={handleChange} 
+          />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <Input label="Phone" name="phone" value={form.phone || ''} onChange={handleChange} />
-          <Input label="Company" name="company" value={form.company || ''} onChange={handleChange} />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Input 
+            label="Phone" 
+            name="phone" 
+            value={form.phone || ''} 
+            onChange={handleChange} 
+          />
+          <Input 
+            label="Company" 
+            name="company" 
+            value={form.company || ''} 
+            onChange={handleChange} 
+          />
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          <Select label="Status" name="status" value={form.status || ''} onChange={handleChange}>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Select 
+            label="Status" 
+            name="status" 
+            value={form.status || ''} 
+            onChange={handleChange}
+          >
             {LEAD_STATUS_VALUES.map((s) => (
-              <option key={s} value={s} className="bg-[#111827]">
-                {s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+              <option key={s} value={s} className="bg-white uppercase text-xs font-bold tracking-wider text-[#09090B]">
+                {s.replace(/_/g, ' ')}
               </option>
             ))}
           </Select>
-          <Select label="Source" name="source" value={form.source || ''} onChange={handleChange}>
+          
+          <Select 
+            label="Source" 
+            name="source" 
+            value={form.source || ''} 
+            onChange={handleChange}
+          >
             {LEAD_SOURCES.map((s) => (
-              <option key={s} value={s} className="bg-[#111827]">
-                {s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+              <option key={s} value={s} className="bg-white uppercase text-xs font-bold tracking-wider text-[#09090B]">
+                {s.replace(/_/g, ' ')}
               </option>
             ))}
           </Select>
+          
           <Input
             label="Deal Value ($)"
             name="dealValue"
@@ -81,9 +116,23 @@ export function EditLeadModal({ open, onClose, lead, onSuccess }) {
             onChange={handleChange}
           />
         </div>
-        <div className="flex justify-end gap-3 pt-2">
-          <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button type="submit" loading={loading}>Save Changes</Button>
+
+        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 mt-4 border-t border-[#E4E4E7]">
+          <Button 
+            type="button" 
+            variant="secondary" 
+            onClick={onClose}
+            className="w-full sm:w-auto"
+          >
+            Cancel
+          </Button>
+          <Button 
+            type="submit" 
+            loading={loading}
+            className="w-full sm:w-auto"
+          >
+            Save Changes
+          </Button>
         </div>
       </form>
     </Modal>

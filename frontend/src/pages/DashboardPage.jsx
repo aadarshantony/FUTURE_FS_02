@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import {
-  Users, TrendingUp, DollarSign, Target,
+  Users, TrendUp, CurrencyDollar, Target,
   ArrowRight, Clock,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import { analyticsService } from '../services/analytics.service';
 import { leadsService } from '../services/leads.service';
 import { activitiesService } from '../services/activities.service';
@@ -16,18 +16,19 @@ import { formatCurrency, formatRelativeTime } from '../utils/helpers';
 import { ACTIVITY_ACTION_CONFIG } from '../utils/constants';
 
 function RecentActivityItem({ activity }) {
-  const config = ACTIVITY_ACTION_CONFIG[activity.action] || { label: activity.action, color: 'text-slate-400' };
+  const config = ACTIVITY_ACTION_CONFIG[activity.action] || { label: activity.action, color: 'text-[#71717A]' };
   return (
-    <div className="flex items-start gap-3 py-3 border-b border-[#1E2D45] last:border-0">
-      <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5">
-        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-      </div>
+    <div 
+      className="flex items-start gap-4 py-4 border-b border-[#E4E4E7] last:border-0 hover:bg-[#F4F4F5] transition-colors"
+      data-testid={`activity-item-${activity._id}`}
+    >
+      <div className="w-2.5 h-2.5 rounded-none bg-[#FF4500] mt-1 shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-slate-300 leading-snug">{activity.description}</p>
-        <div className="flex items-center gap-1.5 mt-0.5">
-          <span className={`text-[10px] font-mono ${config.color}`}>{config.label}</span>
-          <span className="text-[10px] text-slate-700">·</span>
-          <span className="text-[10px] text-slate-600 font-mono">{formatRelativeTime(activity.createdAt)}</span>
+        <p className="text-sm font-bold text-[#09090B] leading-snug">{activity.description}</p>
+        <div className="flex items-center gap-2 mt-1.5">
+          <span className={`text-[10px] uppercase font-bold tracking-[0.2em] ${config.color}`}>{config.label}</span>
+          <span className="text-[10px] text-[#E4E4E7] font-bold">/</span>
+          <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#71717A]">{formatRelativeTime(activity.createdAt)}</span>
         </div>
       </div>
     </div>
@@ -47,9 +48,9 @@ export default function DashboardPage() {
   const recentActivities = (activities || []).slice(0, 8);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 font-['Manrope',sans-serif] animate-fade-in" data-testid="dashboard-page">
       {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {analyticsLoading || revenueLoading ? (
           Array(4).fill(0).map((_, i) => <SkeletonStats key={i} />)
         ) : (
@@ -59,75 +60,81 @@ export default function DashboardPage() {
               label="Total Leads"
               value={overview.totalLeads ?? 0}
               sub="All time"
-              color="blue"
+              color="zinc"
+              data-testid="stat-card-total-leads"
             />
             <StatCard
               icon={Target}
               label="Converted"
               value={overview.convertedLeads ?? 0}
               sub={`${overview.conversionRate ?? 0}% rate`}
-              color="emerald"
+              color="success"
+              data-testid="stat-card-converted"
             />
             <StatCard
-              icon={TrendingUp}
+              icon={TrendUp}
               label="Lost Leads"
               value={overview.lostLeads ?? 0}
               sub="Need attention"
-              color="red"
+              color="danger"
+              data-testid="stat-card-lost-leads"
             />
             <StatCard
-              icon={DollarSign}
+              icon={CurrencyDollar}
               label="Total Revenue"
               value={formatCurrency(revenue?.totalRevenue)}
               sub={`${revenue?.deals ?? 0} closed deals`}
-              color="amber"
+              color="primary"
+              data-testid="stat-card-revenue"
             />
           </>
         )}
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2" data-testid="monthly-growth-chart-container">
           {analyticsLoading ? <SkeletonCard /> : <MonthlyGrowthChart data={analytics?.monthlyGrowth} />}
         </div>
-        <div>
+        <div data-testid="status-distribution-chart-container">
           {analyticsLoading ? <SkeletonCard /> : <StatusDistributionChart data={analytics?.statusStats} />}
         </div>
       </div>
 
       {/* Recent Leads + Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Leads */}
-        <div className="lg:col-span-2 bg-[#111827] border border-[#1E2D45] rounded-[14px]">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1E2D45]">
-            <h3 className="text-sm font-semibold text-slate-100">Recent Leads</h3>
+        <div className="lg:col-span-2 bg-white border border-[#E4E4E7] rounded-none hover:border-[#18181B] transition-colors" data-testid="recent-leads-section">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-[#E4E4E7]">
+            <h3 className="text-sm font-['Outfit',sans-serif] font-black uppercase tracking-widest text-[#09090B]">Recent Leads</h3>
             <Link
               to="/leads"
-              className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 font-mono transition-colors"
+              className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-bold text-[#FF4500] hover:text-[#E03C00] transition-colors"
+              data-testid="view-all-leads-link"
             >
-              View all <ArrowRight size={12} />
+              View all <ArrowRight size={14} weight="bold" />
             </Link>
           </div>
-          <div className="p-2">
+          <div className="p-0">
             {leadsLoading ? (
-              <div className="p-4 space-y-3">{Array(4).fill(0).map((_, i) => <SkeletonCard key={i} className="h-12" />)}</div>
+              <div className="p-6 space-y-4">{Array(4).fill(0).map((_, i) => <SkeletonCard key={i} className="h-16 rounded-none" />)}</div>
             ) : recentLeads.length === 0 ? (
-              <p className="text-center text-slate-600 text-sm font-mono py-8">No leads yet</p>
+              <p className="text-center text-[#71717A] text-sm font-bold py-12" data-testid="no-leads-message">No leads yet</p>
             ) : (
               recentLeads.map((lead) => (
                 <div
                   key={lead._id}
-                  className="flex items-center gap-3 px-3 py-3 rounded-[10px] hover:bg-white/3 transition-colors"
+                  className="flex items-center gap-4 px-6 py-4 border-b border-[#E4E4E7] last:border-0 hover:bg-[#F4F4F5] transition-colors"
+                  data-testid={`recent-lead-item-${lead._id}`}
                 >
-                  <Avatar name={lead.fullName} size="sm" />
+                  <Avatar name={lead.fullName} size="sm" className="rounded-none border border-[#18181B]" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-200 truncate">{lead.fullName}</p>
-                    <p className="text-xs text-slate-600 font-mono truncate">{lead.company || lead.email}</p>
+                    <p className="text-sm font-bold text-[#09090B] truncate">{lead.fullName}</p>
+                    <p className="text-[10px] text-[#71717A] font-bold uppercase tracking-[0.1em] truncate mt-0.5">{lead.company || lead.email}</p>
                   </div>
                   <StatusBadge status={lead.status} />
                   {lead.dealValue > 0 && (
-                    <span className="text-xs font-mono text-emerald-400 font-medium shrink-0">
+                    <span className="text-sm font-['Outfit',sans-serif] font-black text-[#FF4500] shrink-0">
                       {formatCurrency(lead.dealValue)}
                     </span>
                   )}
@@ -138,16 +145,16 @@ export default function DashboardPage() {
         </div>
 
         {/* Activity Feed */}
-        <div className="bg-[#111827] border border-[#1E2D45] rounded-[14px]">
-          <div className="flex items-center gap-2 px-5 py-4 border-b border-[#1E2D45]">
-            <Clock size={14} className="text-emerald-400" />
-            <h3 className="text-sm font-semibold text-slate-100">Recent Activity</h3>
+        <div className="bg-white border border-[#E4E4E7] rounded-none hover:border-[#18181B] transition-colors" data-testid="recent-activity-section">
+          <div className="flex items-center gap-3 px-6 py-5 border-b border-[#E4E4E7]">
+            <Clock size={18} weight="bold" className="text-[#FF4500]" />
+            <h3 className="text-sm font-['Outfit',sans-serif] font-black uppercase tracking-widest text-[#09090B]">Recent Activity</h3>
           </div>
-          <div className="px-5 py-2 max-h-80 overflow-y-auto">
+          <div className="px-6 py-2 max-h-[400px] overflow-y-auto">
             {activitiesLoading ? (
-              <div className="space-y-3 py-3">{Array(4).fill(0).map((_, i) => <div key={i} className="skeleton h-10" />)}</div>
+              <div className="space-y-4 py-4">{Array(4).fill(0).map((_, i) => <div key={i} className="h-14 bg-[#F4F4F5] animate-pulse" />)}</div>
             ) : recentActivities.length === 0 ? (
-              <p className="text-center text-slate-600 text-sm font-mono py-8">No activity yet</p>
+              <p className="text-center text-[#71717A] text-sm font-bold py-12" data-testid="no-activity-message">No activity yet</p>
             ) : (
               recentActivities.map((a) => <RecentActivityItem key={a._id} activity={a} />)
             )}

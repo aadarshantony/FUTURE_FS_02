@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { X } from '@phosphor-icons/react';
 import { cn } from '../../utils/helpers';
 
 const sizes = {
@@ -35,47 +35,39 @@ export function Modal({ open, onClose, title, children, size = 'md', className =
   return createPortal(
     <div
       ref={overlayRef}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px',
-      }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       {/* Backdrop */}
       <div
-        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}
-        className="animate-fade-in"
+        className="absolute inset-0 bg-[#09090B]/60 backdrop-blur-sm animate-fade-in"
       />
 
       {/* Modal panel */}
       <div
         className={cn(
-          'relative w-full bg-[#0D1117] border border-[#1E2D45]',
-          'rounded-[18px] shadow-2xl shadow-black/60',
-          'animate-fade-in',
+          'relative w-full bg-white font-["Manrope",sans-serif]',
+          'rounded-none border-2 border-[#18181B]',
+          'shadow-[8px_8px_0px_0px_#18181B]',
+          'animate-slide-up',
           sizes[size],
           className
         )}
-        style={{ position: 'relative' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E2D45]">
-          <h2 className="text-base font-semibold text-slate-100">{title}</h2>
+        <div className="flex items-center justify-between px-6 md:px-8 py-5 border-b-2 border-[#18181B] bg-[#F4F4F5]">
+          <h2 className="text-lg md:text-xl font-['Outfit',sans-serif] font-black uppercase tracking-widest text-[#09090B]">{title}</h2>
           <button
             onClick={onClose}
-            className="text-slate-500 hover:text-slate-200 hover:bg-white/5 p-1.5 rounded-lg transition-all"
+            data-testid="close-modal-btn"
+            className="text-[#09090B] bg-transparent hover:bg-white border-2 border-transparent hover:border-[#18181B] p-1.5 rounded-none transition-all"
           >
-            <X size={16} />
+            <X size={20} weight="bold" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 overflow-y-auto" style={{ maxHeight: '80vh' }}>
+        <div className="px-6 md:px-8 py-6 md:py-8 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 10rem)' }}>
           {children}
         </div>
       </div>
